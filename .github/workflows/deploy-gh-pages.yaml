@@ -1,0 +1,37 @@
+name: Deploy to GithubPages
+
+# on:
+#   push:
+#     branches:
+#       - master
+on: pull_request
+permissions:
+  contents: write
+jobs:
+  deploy-to-gh-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Packages
+        run: |
+          npm ci
+
+      # - name: Test
+      #   run: npm test
+
+      # - name: CI Badges
+      #   uses: GaelGirodon/ci-badges-action@v1.1.0
+      #   with:
+      #     gist-id: f9b687636482339cabd6a8c4b369f3eb
+      #     token: ${{ secrets.GIST_TOKEN }}
+
+      - name: Build prod
+        run: |
+          npm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist # The folder the action should deploy.

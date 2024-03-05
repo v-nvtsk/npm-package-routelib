@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es2022" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "skipLibCheck": true,
+    "types": ["@types/node"],
+    "noEmit": true,
+    "allowJs": true
+  },
+  "extends": "./tsconfig.json",
+  "include": [".eslintrc.js", "stylelint.config.js", "jest.config.ts", "webpack.config.js"]
+}

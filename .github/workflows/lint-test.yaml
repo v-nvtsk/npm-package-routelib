@@ -1,0 +1,27 @@
+name: Lint and Test
+
+on: pull_request
+permissions:
+  contents: write
+jobs:
+  deploy-to-gh-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Packages
+        run: |
+          npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: CI Badges
+        uses: GaelGirodon/ci-badges-action@v1.1.0
+        with:
+          gist-id: f9b687636482339cabd6a8c4b369f3eb
+          token: ${{ secrets.GIST_TOKEN }}
