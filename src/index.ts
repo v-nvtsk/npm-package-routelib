@@ -99,8 +99,8 @@ export class Router {
       if (this.mode === "history") {
         this.navigate(target.getAttribute("href")!);
       } else {
-        const path = target.getAttribute("href");
-        window.location.href = `/#${path}`;
+        const path = target.getAttribute("href")!;
+        window.location.hash = path;
       }
     } else {
       window.open(target.getAttribute("href")!, "_blank");
