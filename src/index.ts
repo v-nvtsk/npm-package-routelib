@@ -62,6 +62,7 @@ export class Router {
 
     if (update) this.updateURL(resourcePath + url.search);
 
+    this.currentRoute = route;
     if (route.onEnter) await route.onEnter(params);
   }
 
