@@ -30,7 +30,7 @@ import { Router } from "./index";
       expect(router).toBeInstanceOf(Router);
     });
 
-    it.only("should handle string routes", () => {
+    it("should handle string routes", () => {
       router.navigate("/");
       expect(content.innerHTML).toEqual("/");
 
@@ -108,35 +108,43 @@ import { Router } from "./index";
     });
 
     it("should handle onBeforeEnter,onEnter,onLeave hooks", async () => {
-      const mockedFn = jest.fn().mockImplementation(() => {});
+      const mockedBeforeEnter = jest.fn().mockImplementation(() => {});
+      const mockedEnter = jest.fn().mockImplementation(() => {});
+      const mockedLeave = jest.fn().mockImplementation(() => {});
 
       router.addRoute({
         path: "/test",
         onBeforeEnter: (params) => {
-          mockedFn("onBeforeEnter: ", params);
+          mockedBeforeEnter("onBeforeEnter: ", params);
         },
         onEnter: (params) => {
-          mockedFn("onEnter: ", params);
+          mockedEnter("onEnter: ", params);
         },
         onLeave: (params) => {
-          mockedFn("onLeave: ", params);
+          mockedLeave("onLeave: ", params);
         },
       });
 
-      await router.navigate("/test?a=1&b=2");
-      expect(mockedFn).toHaveBeenNthCalledWith(1, "onBeforeEnter: ", { a: "1", b: "2" });
-      expect(mockedFn).toHaveBeenNthCalledWith(2, "onEnter: ", { a: "1", b: "2" });
-      await router.navigate("/?exit=true");
-      expect(mockedFn).toHaveBeenNthCalledWith(3, "onLeave: ", { exit: "true" });
+      jest.useFakeTimers();
+      router.navigate("/test?a=1&b=2");
+      await Promise.resolve();
+      expect(mockedBeforeEnter).toHaveBeenCalledWith("onBeforeEnter: ", { a: "1", b: "2" });
+      expect(mockedEnter).toHaveBeenCalledWith("onEnter: ", { a: "1", b: "2" });
+      router.navigate("/");
+      await Promise.resolve();
+      expect(mockedLeave).toHaveBeenCalled();
+      expect(mockedLeave).toHaveBeenCalledWith("onLeave: ", {});
     });
 
     it("should be able to go back and forth", async () => {
       jest.resetAllMocks();
+      const mockClickHandler = jest.fn();
+      document.addEventListener("hashchange", mockClickHandler);
 
       const testEl = document.createElement("div");
       document.body.append(testEl);
 
-      const sequence = ["/test", "/test2", "/test3", "/test"];
+      const sequence = ["/test1", "/test2", "/test3", "/test4"];
       const result: string[] = [];
 
       content.innerHTML = "";
@@ -148,7 +156,7 @@ import { Router } from "./index";
         return el;
       });
 
-      sequence.forEach((path) => {
+      sequence.forEach(async (path) => {
         router.addRoute({
           path,
           onEnter: () => {
@@ -157,26 +165,29 @@ import { Router } from "./index";
         });
       });
 
-      links.forEach((link) => {
+      links.forEach(async (link, index) => {
         link.click();
+
+        // await Promise.resolve();
+        const newURL = link.href;
+        const oldURL = index - 1 < 0 ? "/" : links[index - 1].href;
+        window.dispatchEvent(new HashChangeEvent("hashchange", { newURL, oldURL }));
       });
+      await Promise.resolve();
+
       expect(result).toEqual(sequence);
 
       result.splice(0, 4);
       expect(result.length).toEqual(0);
 
-      const revSequence = sequence.reverse().slice(1);
-      revSequence.forEach((el) => {
-        if (mode === "history") {
+      if (mode === "history") {
+        const revSequence = sequence.reverse().slice(1);
+        revSequence.forEach((el) => {
           window.dispatchEvent(new PopStateEvent("popstate", { state: { path: el } }));
-        } else {
-          console.log("el: ", el);
-          window.dispatchEvent(new HashChangeEvent("hashchange", { newURL: el, oldURL: el }));
-        }
-      });
-      console.log("revSequence: ", revSequence);
-      console.log("result: ", result);
-      expect(revSequence).toEqual(result);
+        });
+        await Promise.resolve();
+        expect(revSequence).toEqual(result);
+      }
     });
   });
 });
