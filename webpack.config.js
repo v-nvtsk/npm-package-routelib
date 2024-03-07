@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = (env) => ({
   mode: env.mode === "development" ? "development" : "production",
@@ -20,10 +19,6 @@ module.exports = (env) => ({
   module: {
     rules: [
       {
-        test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
-      },
-      {
         test: /\.tsx?$/,
         use: [
           {
@@ -38,9 +33,4 @@ module.exports = (env) => ({
       },
     ],
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: "Calendar",
-    }),
-  ],
 });
