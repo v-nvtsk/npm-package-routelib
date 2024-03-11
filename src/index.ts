@@ -95,16 +95,18 @@ export class Router {
 
   clickListener = (event: MouseEvent): void => {
     event.preventDefault();
-    const target = event.target as HTMLAnchorElement;
-    if (target.matches("a[href^='/']")) {
-      if (this.mode === "history") {
-        this.navigate(target.getAttribute("href")!);
+    if ((event.target as HTMLElement).matches("a")) {
+      const target = event.target as HTMLAnchorElement;
+      if (target.matches("a[href^='/']")) {
+        if (this.mode === "history") {
+          this.navigate(target.getAttribute("href")!);
+        } else {
+          const path = target.getAttribute("href")!;
+          window.location.hash = path;
+        }
       } else {
-        const path = target.getAttribute("href")!;
-        window.location.hash = path;
+        window.open(target.getAttribute("href")!, "_blank");
       }
-    } else {
-      window.open(target.getAttribute("href")!, "_blank");
     }
   };
 

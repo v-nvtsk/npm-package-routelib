@@ -189,5 +189,23 @@ import { Router } from "./index";
         expect(revSequence).toEqual(result);
       }
     });
+    it("should handle external links", () => {
+      const link = document.createElement("a");
+      link.href = "https://ya.ru";
+      document.body.append(link);
+      jest.spyOn(window, "open").mockImplementation(() => null);
+      link.click();
+      expect(window.open).toHaveBeenCalled();
+    });
+
+    it("should do nothing on clicks out of anchor", () => {
+      const link = document.createElement("a");
+      link.href = "https://ya.ru";
+      link.target = "_blank";
+      document.body.append(link);
+      jest.spyOn(window, "open").mockImplementation(() => null);
+      document.body.click();
+      expect(window.open).not.toHaveBeenCalled();
+    });
   });
 });
