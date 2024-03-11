@@ -1,13 +1,4 @@
-type HookParams = {
-  [key: string]: string;
-};
-
-type RouteConfig = {
-  path: string | RegExp | Function; // Path as string or RegExp for pattern matching
-  onBeforeEnter?: (params?: HookParams) => Promise<void> | void;
-  onEnter: (params?: HookParams) => Promise<void> | void;
-  onLeave?: (params?: HookParams) => Promise<void> | void;
-};
+import { RouteConfig, HookParams } from "./index.d";
 
 export class Router {
   private routes: RouteConfig[] = [];
