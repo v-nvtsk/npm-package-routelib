@@ -125,7 +125,6 @@ import { Router } from "./index";
         },
       });
 
-      jest.useFakeTimers();
       router.navigate("/test?a=1&b=2");
       await Promise.resolve();
       expect(mockedBeforeEnter).toHaveBeenCalledWith("onBeforeEnter: ", { a: "1", b: "2" });
