@@ -85,8 +85,8 @@ export class Router {
   }
 
   clickListener = (event: MouseEvent): void => {
-    event.preventDefault();
     if ((event.target as HTMLElement).matches("a")) {
+      event.preventDefault();
       const target = event.target as HTMLAnchorElement;
       if (target.matches("a[href^='/']")) {
         if (this.mode === "history") {
